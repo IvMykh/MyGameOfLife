@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Linq;
+using System.Collections;
 using System.Text;
 
 namespace GameOfLife.Core
 {
-    internal class SpaceGrid
+    public class SpaceGrid
     {
         private BitArray[] _spaceGrid;
 
@@ -12,6 +14,14 @@ namespace GameOfLife.Core
             get
             {
                 return _spaceGrid.Length;
+            }
+        }
+
+        public bool this[int i, int j]
+        {
+            get
+            {
+                return _spaceGrid[i][j];
             }
         }
 
@@ -32,13 +42,14 @@ namespace GameOfLife.Core
             _spaceGrid = createSpaceGrid(dimension);
         }
 
-        public void SetCellAlive(int i, int j)
+        public void SetCellLivingState(int i, int j, bool state)
         {
-            _spaceGrid[i][j] = true;
+            _spaceGrid[i][j] = state;
         }
-        public void SetCellDead(int i, int j)
+
+        public bool IsCellAlive(int i, int j)
         {
-            _spaceGrid[i][j] = false;
+            return _spaceGrid[i][j];
         }
 
         private BitArray[] extendSpaceGrid(int newDimension)
@@ -84,6 +95,32 @@ namespace GameOfLife.Core
             {
                 _spaceGrid = extendSpaceGrid(newDimension);
             }
+        }
+
+        public void Clear()
+        {
+            foreach (var row in _spaceGrid)
+            {
+                row.Xor(row);
+            }
+        }
+
+        public int CountAliveCells()
+        {
+            int count = 0;
+
+            for (int i = 0; i < Dimension; i++)
+            {
+                for (int j = 0; j < Dimension; j++)
+                {
+                    if (_spaceGrid[i][j] == true)
+                    {
+                        ++count;
+                    }
+                }
+            }
+
+            return count;
         }
 
         public string AsString()
