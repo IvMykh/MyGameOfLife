@@ -20,7 +20,7 @@
             <Setter Property="Width" Value="500" />
             <Setter Property="Height" Value="500" />
             <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BorderBrush" Value="DarkGray" />
+            <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="Margin" Value="5"></Setter>
         </Style>
         <Style TargetType="StackPanel" x:Key="StackPanelStyle">
@@ -40,8 +40,23 @@
         <ScrollViewer Grid.Row="0" Grid.Column="0"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Auto">
-            <Border  Style="{StaticResource CanvasBorderStyle}" >
-                <Canvas Background="GhostWhite" />
+            <Border Style="{StaticResource CanvasBorderStyle}" >
+                <Canvas>
+                    <Canvas.Background>
+                        <DrawingBrush TileMode="Tile" Viewport="0,0,5,5" ViewportUnits="Absolute">
+                            <DrawingBrush.Drawing>
+                                <GeometryDrawing>
+                                    <GeometryDrawing.Geometry>
+                                        <RectangleGeometry Rect="0,0,100,100" />
+                                    </GeometryDrawing.Geometry>
+                                    <GeometryDrawing.Pen>
+                                        <Pen Brush="Black" Thickness="1" />
+                                    </GeometryDrawing.Pen>
+                                </GeometryDrawing>
+                            </DrawingBrush.Drawing>
+                        </DrawingBrush>
+                    </Canvas.Background>
+                </Canvas>
             </Border>
         </ScrollViewer>
 

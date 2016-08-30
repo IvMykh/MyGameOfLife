@@ -3,11 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ViewModel="clr-namespace:GameOfLife.UI.ViewModel"
         xmlns:View="clr-namespace:GameOfLife.UI.View"
         mc:Ignorable="d"
         Title="Game of Life" 
         Height="550" Width="630">
 
+    <Window.DataContext>
+        <ViewModel:Presenter />
+    </Window.DataContext>
+    
     <View:GameOfLifeControl />
 
 </Window>
