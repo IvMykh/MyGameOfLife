@@ -3,9 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:cmd="http://www.galasoft.ch/mvvmlight"
              xmlns:View="clr-namespace:GameOfLife.UI.View"
+             xmlns:ViewModel="clr-namespace:GameOfLife.UI.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance ViewModel:Presenter}">
 
     <Control.Resources>
         <Style TargetType="Button" x:Key="ButtonStyle">
@@ -17,9 +21,9 @@
         <Style TargetType="Border" x:Key="CanvasBorderStyle">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Width" Value="500" />
-            <Setter Property="Height" Value="500" />
-            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Width" Value="{Binding SpaceGridSideLength, Mode=OneTime}" />
+            <Setter Property="Height" Value="{Binding SpaceGridSideLength, Mode=OneTime}" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="BorderBrush" Value="Black" />
             <Setter Property="Margin" Value="5"></Setter>
         </Style>
@@ -31,6 +35,11 @@
         </Style>
     </Control.Resources>
 
+    <UserControl.InputBindings>
+        <KeyBinding Key="Add" Command="{Binding KeyPressCommand}" CommandParameter="1" />
+        <KeyBinding Key="Subtract" Command="{Binding KeyPressCommand}" CommandParameter="-1" />
+    </UserControl.InputBindings>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"></ColumnDefinition>
@@ -42,8 +51,20 @@
                       HorizontalScrollBarVisibility="Auto">
             <Border Style="{StaticResource CanvasBorderStyle}" >
                 <Canvas>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseWheel">
+                            <cmd:EventToCommand Command="{Binding MouseWheelCommand}" PassEventArgsToCommand="True" />
+                        </i:EventTrigger>
+
+                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                            <cmd:EventToCommand Command="{Binding MouseLeftButtonDownCommand}" PassEventArgsToCommand="True" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
                     <Canvas.Background>
-                        <DrawingBrush TileMode="Tile" Viewport="0,0,5,5" ViewportUnits="Absolute">
+                        <DrawingBrush TileMode="Tile" 
+                                      Viewport="{Binding GridConfig, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      ViewportUnits="Absolute">
                             <DrawingBrush.Drawing>
                                 <GeometryDrawing>
                                     <GeometryDrawing.Geometry>
@@ -71,6 +92,7 @@
                 <Button x:Name="btnReset" 
                     Content="Reset" 
                     Style="{StaticResource ButtonStyle}" />
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

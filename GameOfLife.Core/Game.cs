@@ -12,16 +12,14 @@ namespace GameOfLife.Core
 
         public int GenerationNumber
         {
-            get
-            {
+            get {
                 return _gameStatistics.GenerationNumber;
             }
         }
 
         public int AliveCellsCount
         {
-            get
-            {
+            get {
                 return _gameStatistics.AliveCellsCount;
             }
         }
@@ -31,6 +29,11 @@ namespace GameOfLife.Core
             _spaceGrid      = new SpaceGrid(spaceGridDimension);
             _gameStatistics = new GameStatisticsHelper(_spaceGrid);
             _stepPerformer  = new StepPerformerHelper(_spaceGrid);
+        }
+
+        public void ScaleSpaceGrid(int newDimension)
+        {
+            _spaceGrid.Scale(newDimension);
         }
 
         public void Reset()
@@ -54,6 +57,15 @@ namespace GameOfLife.Core
         {
             applyStepBuffer(_stepPerformer.GetNewGeneration());
             _gameStatistics.Update();
+        }
+
+        public bool IsCellAlive(int i, int j)
+        {
+            return _spaceGrid.IsCellAlive(i, j);
+        }
+        public void SetCellLivingState(int i, int j, bool state)
+        {
+            _spaceGrid.SetCellLivingState(i, j, state);
         }
     }
 }

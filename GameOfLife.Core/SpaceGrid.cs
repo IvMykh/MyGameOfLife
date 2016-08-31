@@ -11,16 +11,14 @@ namespace GameOfLife.Core
 
         public int Dimension
         {
-            get
-            {
+            get {
                 return _spaceGrid.Length;
             }
         }
 
         public bool this[int i, int j]
         {
-            get
-            {
+            get {
                 return _spaceGrid[i][j];
             }
         }
@@ -42,14 +40,13 @@ namespace GameOfLife.Core
             _spaceGrid = createSpaceGrid(dimension);
         }
 
-        public void SetCellLivingState(int i, int j, bool state)
-        {
-            _spaceGrid[i][j] = state;
-        }
-
         public bool IsCellAlive(int i, int j)
         {
             return _spaceGrid[i][j];
+        }
+        public void SetCellLivingState(int i, int j, bool state)
+        {
+            _spaceGrid[i][j] = state;
         }
 
         private BitArray[] extendSpaceGrid(int newDimension)

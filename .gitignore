@@ -156,5 +156,3 @@ $RECYCLE.BIN/
 .DS_Store
 
 packages/
-OnlineDietManager.Domain/Migrations/
-OnlineDietManager.v12

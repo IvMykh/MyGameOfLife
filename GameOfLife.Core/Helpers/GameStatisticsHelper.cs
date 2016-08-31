@@ -9,14 +9,13 @@
             get { return _spaceGrid; }
         }
 
-        public int GenerationNumber { get; set; }
-        public int AliveCellsCount { get; set; }
+        public int GenerationNumber { get; private set; }
+        public int AliveCellsCount  { get; private set; }
 
         public GameStatisticsHelper(SpaceGrid spaceGrid)
         {
             _spaceGrid = spaceGrid;
         }
-
 
         public void Update()
         {

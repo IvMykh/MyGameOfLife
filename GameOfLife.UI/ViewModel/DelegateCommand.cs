@@ -1,20 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace GameOfLife.UI.ViewModel
 {
-    public class DelegateCommand
-        : ICommand
+    public class DelegateCommand<T>
+        : ICommand 
+        where T : class
     {
-        private readonly Action _action;
+        private readonly Action<T> _action;
 
-        public DelegateCommand(Action action)
+        public DelegateCommand(Action<T> action)
         {
             _action = action;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        protected virtual void OnCanExecuteChanged(EventArgs e)
+        {
+            var handler = CanExecuteChanged;
+            
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         public bool CanExecute(object parameter)
@@ -24,10 +33,7 @@ namespace GameOfLife.UI.ViewModel
 
         public void Execute(object parameter)
         {
-            _action();
+            _action(parameter as T);
         }
-
-        public event EventHandler CanExecuteChanged;
-        
     }
 }
