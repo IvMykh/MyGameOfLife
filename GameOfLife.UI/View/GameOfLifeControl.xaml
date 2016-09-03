@@ -35,11 +35,6 @@
         </Style>
     </Control.Resources>
 
-    <UserControl.InputBindings>
-        <KeyBinding Key="Add" Command="{Binding KeyPressCommand}" CommandParameter="1" />
-        <KeyBinding Key="Subtract" Command="{Binding KeyPressCommand}" CommandParameter="-1" />
-    </UserControl.InputBindings>
-    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"></ColumnDefinition>
@@ -50,7 +45,16 @@
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Auto">
             <Border Style="{StaticResource CanvasBorderStyle}" >
-                <Canvas>
+                <Canvas x:Name="canv" Focusable="True">
+                    <Canvas.InputBindings>
+                        <KeyBinding Key="Add"      
+                                    Command="{Binding AddKeyPressCommand}" 
+                                    CommandParameter="{Binding ElementName=canv}" />
+                        <KeyBinding Key="Subtract" 
+                                    Command="{Binding SubtractKeyPressCommand}" 
+                                    CommandParameter="{Binding ElementName=canv}" />
+                    </Canvas.InputBindings>
+                    
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseWheel">
                             <cmd:EventToCommand Command="{Binding MouseWheelCommand}" PassEventArgsToCommand="True" />
@@ -90,9 +94,10 @@
                     Style="{StaticResource ButtonStyle}" />
 
                 <Button x:Name="btnReset" 
-                    Content="Reset" 
-                    Style="{StaticResource ButtonStyle}" />
-
+                        Content="Reset" 
+                        Style="{StaticResource ButtonStyle}" 
+                        Command="{Binding ResetBtnPressCommand}" 
+                        CommandParameter="{Binding ElementName=canv}" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

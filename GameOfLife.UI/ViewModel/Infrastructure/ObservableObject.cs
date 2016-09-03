@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace GameOfLife.UI.ViewModel
+namespace GameOfLife.UI.ViewModel.Infrastructure
 {
     public class ObservableObject
         : INotifyPropertyChanged

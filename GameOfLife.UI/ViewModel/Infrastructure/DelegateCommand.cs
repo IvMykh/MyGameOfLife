@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace GameOfLife.UI.ViewModel
+namespace GameOfLife.UI.ViewModel.Infrastructure
 {
     public class DelegateCommand<T>
         : ICommand 

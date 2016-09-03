@@ -77,11 +77,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ViewModel\AppConsts.cs" />
-    <Compile Include="ViewModel\DelegateCommand.cs" />
+    <Compile Include="ViewModel\Infrastructure\DelegateCommand.cs" />
     <Compile Include="ViewModel\Helpers\SpaceGridInteractionHelper.cs" />
     <Compile Include="ViewModel\Helpers\ZoomHelper.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ObservableObject.cs" />
+    <Compile Include="ViewModel\Infrastructure\ObservableObject.cs" />
     <Compile Include="ViewModel\Presenter.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\GameOfLifeControl.xaml.cs">

@@ -1,9 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
 
-using GameOfLife.UI.ViewModel.Helpers;
 using GameOfLife.Core;
+using GameOfLife.UI.ViewModel.Helpers;
+using GameOfLife.UI.ViewModel.Infrastructure;
 
 namespace GameOfLife.UI.ViewModel
 {
@@ -13,8 +15,8 @@ namespace GameOfLife.UI.ViewModel
         private Game                        _game;
         private ZoomHelper                  _zoomHelper;
         private SpaceGridInteractionHelper  _spaceGridInteractionHelper;
-
-        private Rect _gridConfig;
+        
+        private Rect    _gridConfig;
 
         public Rect GridConfig
         {
@@ -43,10 +45,14 @@ namespace GameOfLife.UI.ViewModel
             GridConfig = _zoomHelper.InitialGridConfig;
         }
 
-        private void zoom(int zoomDirection)
+        private void zoom(Canvas canvas, int zoomDirection)
         {
+            canvas.Children.Clear();
+
             GridConfig = _zoomHelper.Apply(zoomDirection, GridConfig);
             _game.ScaleSpaceGrid(_zoomHelper.CurrentDimension);
+
+            _spaceGridInteractionHelper.DrawCells(canvas);
         }
 
         public ICommand MouseWheelCommand
@@ -54,18 +60,29 @@ namespace GameOfLife.UI.ViewModel
             get {
                 return new DelegateCommand<MouseWheelEventArgs>(
                     param => {
+                        // TODO: check whether param.Source as Canvas != null.
+
                         int zoomDirection = (param.Delta < 0) ? -1 : 1;
-                        zoom(zoomDirection);
+                        zoom(param.Source as Canvas, zoomDirection);
                     });
             }
         }
 
-        public ICommand KeyPressCommand
+        public ICommand AddKeyPressCommand
         {
             get {
-                return new DelegateCommand<string>(
-                    param => {
-                        zoom(int.Parse(param));
+                return new DelegateCommand<Canvas>(
+                    canvas => {
+                        zoom(canvas, 1);
+                    });
+            }
+        }
+        public ICommand SubtractKeyPressCommand
+        {
+            get {
+                return new DelegateCommand<Canvas>(
+                    canvas => {
+                        zoom(canvas, -1);
                     });
             }
         }
@@ -75,10 +92,24 @@ namespace GameOfLife.UI.ViewModel
             get {
                 return new DelegateCommand<MouseEventArgs>(
                     param => {
-                        Point cursorPos = param.GetPosition(param.Source as Canvas);
-                        _spaceGridInteractionHelper.ToggleCell(cursorPos);
+                        var senderType = param.Source.GetType();
 
-                        // TODO: draw corresponding rectangle (see binding items list in MinimumMVVM).s
+                        if (senderType == typeof(Canvas))
+                            _spaceGridInteractionHelper.AddNewAliveCell(param);
+                        else if (senderType == typeof(Rectangle))
+                            _spaceGridInteractionHelper.RemoveAliveCell(param);
+
+                    });
+            }
+        }
+
+        public ICommand ResetBtnPressCommand
+        {
+            get {
+                return new DelegateCommand<Canvas>(
+                    canvas => {
+                        _game.Reset();
+                        canvas.Children.Clear();
                     });
             }
         }
