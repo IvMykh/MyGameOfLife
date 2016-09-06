@@ -7,11 +7,13 @@ namespace GameOfLife.UI.ViewModel.Infrastructure
         : ICommand 
         where T : class
     {
-        private readonly Action<T> _action;
+        private readonly Action<T>  _action;
+        private readonly Func<bool> _canExecutePredicate;
 
-        public DelegateCommand(Action<T> action)
+        public DelegateCommand(Action<T> action, Func<bool> canExecutePredicate = null)
         {
             _action = action;
+            _canExecutePredicate = canExecutePredicate;
         }
 
         public event EventHandler CanExecuteChanged;
@@ -28,7 +30,7 @@ namespace GameOfLife.UI.ViewModel.Infrastructure
 
         public bool CanExecute(object parameter)
         {
-            return true;
+            return _canExecutePredicate == null ? true : _canExecutePredicate();
         }
 
         public void Execute(object parameter)

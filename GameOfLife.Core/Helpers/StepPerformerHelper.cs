@@ -27,12 +27,26 @@ namespace GameOfLife.Core.Helpers
 
             return buffer;
         }
+        private void clearStepBuffer()
+        {
+            for (int i = 0; i < _stepBuffer.Length; i++)
+            {
+                _stepBuffer[i].Xor(_stepBuffer[i]);
+            }
+        }
 
         public StepPerformerHelper(SpaceGrid spaceGrid)
         {
             _spaceGrid = spaceGrid;
             _stepBuffer = createStepBuffer(TheSpaceGrid.Dimension);
             _neighCounter = new AliveNeighborsCounterHelper(TheSpaceGrid);
+
+            _spaceGrid.SpaceGridScaled  += (sender, e) => { 
+                _stepBuffer = createStepBuffer(e.NewDimension); 
+            };
+            _spaceGrid.SpaceGridReset   += (sender, e) => {
+                clearStepBuffer();
+            };
         }
 
         private void performOnUpperLeftCell()
@@ -95,7 +109,7 @@ namespace GameOfLife.Core.Helpers
             int j = 0;
             int exclusiveBound = TheSpaceGrid.Dimension - 1;
 
-            for (int i = 0; i < exclusiveBound; i++)
+            for (int i = 1; i < exclusiveBound; i++)
             {
                 int aliveNeighborsCount = _neighCounter.CountForLeftCell(i);
                 applyStepRules(i, j, aliveNeighborsCount);
@@ -106,7 +120,7 @@ namespace GameOfLife.Core.Helpers
             int j = TheSpaceGrid.Dimension - 1;
             int exclusiveBound = TheSpaceGrid.Dimension - 1;
 
-            for (int i = 0; i < exclusiveBound; i++)
+            for (int i = 1; i < exclusiveBound; i++)
             {
                 int aliveNeighborsCount = _neighCounter.CountForRightCell(i);
                 applyStepRules(i, j, aliveNeighborsCount);
@@ -135,6 +149,10 @@ namespace GameOfLife.Core.Helpers
                     aliveNeighborsCount > GameConsts.OVER_POPUL_LB_EX)
                 {
                     _stepBuffer[i][j] = false;
+                }
+                else
+                {
+                    _stepBuffer[i][j] = true;
                 }
             }
             else

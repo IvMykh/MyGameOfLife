@@ -2,10 +2,10 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
-
 using GameOfLife.Core;
-using GameOfLife.UI.ViewModel.Helpers;
 using GameOfLife.UI.ViewModel.Infrastructure;
+using GameOfLife.UI.ViewModel.Helpers;
+using GameOfLife.UI.Properties;
 
 namespace GameOfLife.UI.ViewModel
 {
@@ -15,8 +15,10 @@ namespace GameOfLife.UI.ViewModel
         private Game                        _game;
         private ZoomHelper                  _zoomHelper;
         private SpaceGridInteractionHelper  _spaceGridInteractionHelper;
+        private GameAnimationHelper         _gameAnimationHelper;
         
-        private Rect    _gridConfig;
+        private Rect                        _gridConfig;
+        private string                      _startStopBtnText;
 
         public Rect GridConfig
         {
@@ -26,6 +28,16 @@ namespace GameOfLife.UI.ViewModel
             set {
                 _gridConfig = value;
                 RaisePropertyChangedEvent("GridConfig");
+            }
+        }
+        public string StartStopBtnText
+        {
+            get {
+                return _startStopBtnText;
+            }
+            set {
+                _startStopBtnText = value;
+                RaisePropertyChangedEvent("StartStopBtnText");
             }
         }
 
@@ -41,8 +53,10 @@ namespace GameOfLife.UI.ViewModel
             _zoomHelper                 = new ZoomHelper();
             _game                       = new Game(_zoomHelper.CurrentDimension);
             _spaceGridInteractionHelper = new SpaceGridInteractionHelper(_zoomHelper, _game);
+            _gameAnimationHelper        = new GameAnimationHelper(_game, _spaceGridInteractionHelper);
 
             GridConfig = _zoomHelper.InitialGridConfig;
+            StartStopBtnText = Resources.StartBtnText;
         }
 
         private void zoom(Canvas canvas, int zoomDirection)
@@ -60,10 +74,18 @@ namespace GameOfLife.UI.ViewModel
             get {
                 return new DelegateCommand<MouseWheelEventArgs>(
                     param => {
-                        // TODO: check whether param.Source as Canvas != null.
-
                         int zoomDirection = (param.Delta < 0) ? -1 : 1;
-                        zoom(param.Source as Canvas, zoomDirection);
+                        var sourceType = param.Source.GetType();
+
+                        if (sourceType == typeof(Canvas))
+                        {
+                            zoom(param.Source as Canvas, zoomDirection);
+                        }
+                        else if (sourceType == typeof(Rectangle))
+                        {
+                            var sourceRect = param.Source as Rectangle;
+                            zoom(sourceRect.Parent as Canvas, zoomDirection);
+                        }
                     });
             }
         }
@@ -103,6 +125,19 @@ namespace GameOfLife.UI.ViewModel
             }
         }
 
+        public ICommand StartBtnPressCommand
+        {
+            get {
+                return new DelegateCommand<Canvas>(
+                    (canvas) => {
+                        _gameAnimationHelper.Toggle(canvas);
+                        StartStopBtnText =
+                            _gameAnimationHelper.IsRunningNow ? 
+                                Resources.StopBtnText : 
+                                Resources.StartBtnText;
+                    });
+            }
+        }
         public ICommand ResetBtnPressCommand
         {
             get {

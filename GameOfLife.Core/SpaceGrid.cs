@@ -1,10 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Text;
 
 namespace GameOfLife.Core
 {
+    public class SpaceGridScaledEventArgs
+        : EventArgs
+    {
+        public int NewDimension { get; set; }
+    }
+
     public class SpaceGrid
     {
         private BitArray[] _spaceGrid;
@@ -38,6 +43,38 @@ namespace GameOfLife.Core
         public SpaceGrid(int dimension)
         {
             _spaceGrid = createSpaceGrid(dimension);
+        }
+
+        public event EventHandler<SpaceGridScaledEventArgs> SpaceGridScaled;
+        public event EventHandler SpaceGridReset;
+        public event EventHandler StepBufferApplied;
+
+        protected virtual void OnSpaceGridScaled(SpaceGridScaledEventArgs e)
+        {
+            var handler = SpaceGridScaled;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        protected virtual void OnSpaceGridReset(EventArgs e)
+        {
+            var handler = SpaceGridReset;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        protected virtual void OnStepBufferApplied(EventArgs e)
+        {
+            var handler = StepBufferApplied;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         public bool IsCellAlive(int i, int j)
@@ -92,6 +129,8 @@ namespace GameOfLife.Core
             {
                 _spaceGrid = extendSpaceGrid(newDimension);
             }
+
+            OnSpaceGridScaled(new SpaceGridScaledEventArgs { NewDimension = Dimension });
         }
 
         public void Clear()
@@ -100,6 +139,8 @@ namespace GameOfLife.Core
             {
                 row.Xor(row);
             }
+
+            OnSpaceGridReset(EventArgs.Empty);
         }
 
         public int CountAliveCells()
@@ -118,6 +159,19 @@ namespace GameOfLife.Core
             }
 
             return count;
+        }
+
+        public void ApplyStepBuffer(BitArray[] stepBuffer)
+        {
+            for (int i = 0; i < Dimension; i++)
+            {
+                for (int j = 0; j < Dimension; j++)
+                {
+                    _spaceGrid[i][j] = stepBuffer[i][j];
+                }
+            }
+
+            OnStepBufferApplied(EventArgs.Empty);
         }
 
         public string AsString()

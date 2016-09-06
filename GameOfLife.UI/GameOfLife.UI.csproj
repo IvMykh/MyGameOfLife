@@ -77,6 +77,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ViewModel\AppConsts.cs" />
+    <Compile Include="ViewModel\Helpers\GameAnimationHelper.cs" />
     <Compile Include="ViewModel\Infrastructure\DelegateCommand.cs" />
     <Compile Include="ViewModel\Helpers\SpaceGridInteractionHelper.cs" />
     <Compile Include="ViewModel\Helpers\ZoomHelper.cs" />

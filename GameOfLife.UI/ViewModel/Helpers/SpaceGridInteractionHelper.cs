@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-
 using GameOfLife.Core;
 
 namespace GameOfLife.UI.ViewModel.Helpers
@@ -32,13 +31,36 @@ namespace GameOfLife.UI.ViewModel.Helpers
                 J = (int)cursorPos.X / _zoomHelper.CurrentSquareSideLength
             };
         }
-
         private Point getCanvasDrawPoint(IndexPair cellIndexPair)
         {
             return new Point(
                 cellIndexPair.J * _zoomHelper.CurrentSquareSideLength, 
                 cellIndexPair.I * _zoomHelper.CurrentSquareSideLength
                 );
+        }
+
+        public void AddNewAliveCell(MouseEventArgs e)
+        {
+            var canvas = e.Source as Canvas;
+
+            Point cursorPos = e.GetPosition(canvas);
+
+            var cellIndexPair = getCellIndexPair(cursorPos);
+            _game.SetCellLivingState(cellIndexPair.I, cellIndexPair.J, true);
+
+            drawCellOnCanvas(canvas, cellIndexPair);
+        }
+        public void RemoveAliveCell(MouseEventArgs e)
+        {
+            var rect = e.Source as Rectangle;
+            var canvas = rect.Parent as Canvas;
+
+            Point cursorPos = e.GetPosition(canvas);
+
+            var cellIndexPair = getCellIndexPair(cursorPos);
+            _game.SetCellLivingState(cellIndexPair.I, cellIndexPair.J, false);
+            
+            canvas.Children.Remove(rect);
         }
 
         private void drawCellOnCanvas(Canvas canvas, IndexPair cellIndexPair)
@@ -56,32 +78,7 @@ namespace GameOfLife.UI.ViewModel.Helpers
 
             canvas.Children.Add(rect);
         }
-
-        public void AddNewAliveCell(MouseEventArgs e)
-        {
-            var canvas = e.Source as Canvas;
-
-            Point cursorPos = e.GetPosition(canvas);
-
-            var cellIndexPair = getCellIndexPair(cursorPos);
-            _game.SetCellLivingState(cellIndexPair.I, cellIndexPair.J, true);
-
-            drawCellOnCanvas(canvas, cellIndexPair);
-        }
-
-        public void RemoveAliveCell(MouseEventArgs e)
-        {
-            var rect = e.Source as Rectangle;
-            var canvas = rect.Parent as Canvas;
-
-            Point cursorPos = e.GetPosition(canvas);
-
-            var cellIndexPair = getCellIndexPair(cursorPos);
-            _game.SetCellLivingState(cellIndexPair.I, cellIndexPair.J, false);
-            
-            canvas.Children.Remove(rect);
-        }
-
+        
         public void DrawCells(Canvas canvas)
         {
             for (int i = 0; i < _zoomHelper.CurrentDimension; i++)

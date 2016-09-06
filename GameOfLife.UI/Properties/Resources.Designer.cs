@@ -88,6 +88,24 @@ namespace GameOfLife.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start.
+        /// </summary>
+        internal static string StartBtnText {
+            get {
+                return ResourceManager.GetString("StartBtnText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop.
+        /// </summary>
+        internal static string StopBtnText {
+            get {
+                return ResourceManager.GetString("StopBtnText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 5.
         /// </summary>
         internal static string ZoomStep {

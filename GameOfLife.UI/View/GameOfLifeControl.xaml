@@ -90,8 +90,10 @@
                       HorizontalScrollBarVisibility="Auto">
             <StackPanel Style="{StaticResource StackPanelStyle}" >
                 <Button x:Name="btnStartStop" 
-                    Content="Start" 
-                    Style="{StaticResource ButtonStyle}" />
+                        Content="{Binding StartStopBtnText}" 
+                        Style="{StaticResource ButtonStyle}" 
+                        Command="{Binding StartBtnPressCommand}" 
+                        CommandParameter="{Binding ElementName=canv}"  />
 
                 <Button x:Name="btnReset" 
                         Content="Reset" 

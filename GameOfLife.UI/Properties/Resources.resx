@@ -129,6 +129,12 @@
     <value>500</value>
     <comment>The length of space grid in pixels.</comment>
   </data>
+  <data name="StartBtnText" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="StopBtnText" xml:space="preserve">
+    <value>Stop</value>
+  </data>
   <data name="ZoomStep" xml:space="preserve">
     <value>5</value>
     <comment>The increase step of cell square side length in pixels.</comment>

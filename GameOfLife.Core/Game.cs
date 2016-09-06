@@ -39,24 +39,11 @@ namespace GameOfLife.Core
         public void Reset()
         {
             _spaceGrid.Clear();
-            _gameStatistics.Reset();
-        }
-
-        private void applyStepBuffer(BitArray[] stepBuffer)
-        {
-            for (int i = 0; i < _spaceGrid.Dimension; i++)
-            {
-                for (int j = 0; j < _spaceGrid.Dimension; j++)
-                {
-                    _spaceGrid.SetCellLivingState(i, j, stepBuffer[i][j]);
-                }
-            }
         }
 
         public void PerformStep()
         {
-            applyStepBuffer(_stepPerformer.GetNewGeneration());
-            _gameStatistics.Update();
+            _spaceGrid.ApplyStepBuffer(_stepPerformer.GetNewGeneration());
         }
 
         public bool IsCellAlive(int i, int j)

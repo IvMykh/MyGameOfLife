@@ -15,15 +15,18 @@
         public GameStatisticsHelper(SpaceGrid spaceGrid)
         {
             _spaceGrid = spaceGrid;
+
+            _spaceGrid.SpaceGridReset       += (sender, e) => reset();
+            _spaceGrid.StepBufferApplied    += (sender, e) => update();
         }
 
-        public void Update()
+        private void update()
         {
             ++GenerationNumber;
             AliveCellsCount = TheSpaceGrid.CountAliveCells();
         }
 
-        public void Reset()
+        private void reset()
         {
             GenerationNumber = 0;
             AliveCellsCount = 0;
