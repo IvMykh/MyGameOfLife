@@ -28,6 +28,11 @@ namespace GameOfLife.UI.ViewModel.Infrastructure
             }
         }
 
+        public void RaiseCanExecuteChanged()
+        {
+            OnCanExecuteChanged(EventArgs.Empty);
+        }
+
         public bool CanExecute(object parameter)
         {
             return _canExecutePredicate == null ? true : _canExecutePredicate();

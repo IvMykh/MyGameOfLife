@@ -20,7 +20,7 @@ namespace GameOfLife.UI.ViewModel
         private Rect                        _gridConfig;
         private string                      _startStopBtnText;
 
-        public Rect GridConfig
+        public Rect     GridConfig
         {
             get {
                 return _gridConfig;
@@ -30,7 +30,7 @@ namespace GameOfLife.UI.ViewModel
                 RaisePropertyChangedEvent("GridConfig");
             }
         }
-        public string StartStopBtnText
+        public string   StartStopBtnText
         {
             get {
                 return _startStopBtnText;
@@ -48,6 +48,32 @@ namespace GameOfLife.UI.ViewModel
             }
         }
 
+        public int GenerationNumber
+        {
+            get {
+                return _game.GenerationNumber;
+            }
+        }
+        public int AliveCellsCount
+        {
+            get {
+                return _game.AliveCellsCount;
+            }
+        }
+
+
+        // Commands.
+        public DelegateCommand<Canvas> StartBtnPressCommand { get; private set; }
+        public DelegateCommand<Canvas> ResetBtnPressCommand { get; private set; }
+
+        public DelegateCommand<Canvas> AddKeyPressCommand { get; private set; }
+        public DelegateCommand<Canvas> SubtractKeyPressCommand { get; private set; }
+
+        public DelegateCommand<MouseWheelEventArgs> MouseWheelCommand { get; private set; }
+        public DelegateCommand<MouseEventArgs> MouseLeftButtonDownCommand { get; private set; }
+
+
+        // C-tor.
         public Presenter()
         {
             _zoomHelper                 = new ZoomHelper();
@@ -57,22 +83,63 @@ namespace GameOfLife.UI.ViewModel
 
             GridConfig = _zoomHelper.InitialGridConfig;
             StartStopBtnText = Resources.StartBtnText;
+
+
+            initializeCommands();
         }
 
-        private void zoom(Canvas canvas, int zoomDirection)
+        private void initializeCommands()
         {
-            canvas.Children.Clear();
+            StartBtnPressCommand = createStartBtnPressCommand();
+            ResetBtnPressCommand = createResetBtnPressCommand();
 
-            GridConfig = _zoomHelper.Apply(zoomDirection, GridConfig);
-            _game.ScaleSpaceGrid(_zoomHelper.CurrentDimension);
+            AddKeyPressCommand      = createAddKeyPressCommand();
+            SubtractKeyPressCommand = createSubtractKeyPressCommand();
 
-            _spaceGridInteractionHelper.DrawCells(canvas);
+            MouseWheelCommand           = createMouseWheelCommand();
+            MouseLeftButtonDownCommand  = createMouseLeftButtonDownCommand();
         }
 
-        public ICommand MouseWheelCommand
+        private DelegateCommand<Canvas> createStartBtnPressCommand()
         {
-            get {
-                return new DelegateCommand<MouseWheelEventArgs>(
+            return new DelegateCommand<Canvas>(
+                    (canvas) => {
+                        _gameAnimationHelper.Toggle(canvas);
+                        StartStopBtnText =
+                            _gameAnimationHelper.IsRunningNow ? 
+                                Resources.StopBtnText : 
+                                Resources.StartBtnText;
+
+                        ResetBtnPressCommand.RaiseCanExecuteChanged();
+                    });
+        }
+        private DelegateCommand<Canvas> createResetBtnPressCommand()
+        {
+            return new DelegateCommand<Canvas>(
+                    canvas => {
+                        _game.Reset();
+                        canvas.Children.Clear();
+                    },
+                    () => !_gameAnimationHelper.IsRunningNow);
+        }
+        private DelegateCommand<Canvas> createAddKeyPressCommand()
+        {
+            return new DelegateCommand<Canvas>(
+                    canvas =>
+                    {
+                        zoom(canvas, 1);
+                    });
+        }
+        private DelegateCommand<Canvas> createSubtractKeyPressCommand()
+        {
+            return new DelegateCommand<Canvas>(
+                canvas => {
+                    zoom(canvas, -1);
+                });
+        }
+        private DelegateCommand<MouseWheelEventArgs> createMouseWheelCommand()
+        {
+            return new DelegateCommand<MouseWheelEventArgs>(
                     param => {
                         int zoomDirection = (param.Delta < 0) ? -1 : 1;
                         var sourceType = param.Source.GetType();
@@ -87,32 +154,10 @@ namespace GameOfLife.UI.ViewModel
                             zoom(sourceRect.Parent as Canvas, zoomDirection);
                         }
                     });
-            }
         }
-
-        public ICommand AddKeyPressCommand
+        private DelegateCommand<MouseEventArgs> createMouseLeftButtonDownCommand()
         {
-            get {
-                return new DelegateCommand<Canvas>(
-                    canvas => {
-                        zoom(canvas, 1);
-                    });
-            }
-        }
-        public ICommand SubtractKeyPressCommand
-        {
-            get {
-                return new DelegateCommand<Canvas>(
-                    canvas => {
-                        zoom(canvas, -1);
-                    });
-            }
-        }
-
-        public ICommand MouseLeftButtonDownCommand
-        {
-            get {
-                return new DelegateCommand<MouseEventArgs>(
+            return new DelegateCommand<MouseEventArgs>(
                     param => {
                         var senderType = param.Source.GetType();
 
@@ -122,31 +167,16 @@ namespace GameOfLife.UI.ViewModel
                             _spaceGridInteractionHelper.RemoveAliveCell(param);
 
                     });
-            }
         }
+        
+        private void zoom(Canvas canvas, int zoomDirection)
+        {
+            canvas.Children.Clear();
 
-        public ICommand StartBtnPressCommand
-        {
-            get {
-                return new DelegateCommand<Canvas>(
-                    (canvas) => {
-                        _gameAnimationHelper.Toggle(canvas);
-                        StartStopBtnText =
-                            _gameAnimationHelper.IsRunningNow ? 
-                                Resources.StopBtnText : 
-                                Resources.StartBtnText;
-                    });
-            }
-        }
-        public ICommand ResetBtnPressCommand
-        {
-            get {
-                return new DelegateCommand<Canvas>(
-                    canvas => {
-                        _game.Reset();
-                        canvas.Children.Clear();
-                    });
-            }
+            GridConfig = _zoomHelper.Apply(zoomDirection, GridConfig);
+            _game.ScaleSpaceGrid(_zoomHelper.CurrentDimension);
+
+            _spaceGridInteractionHelper.DrawCells(canvas);
         }
     }
 }
