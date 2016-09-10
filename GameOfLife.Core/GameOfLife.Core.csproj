@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C7DED8B0-D3B3-4552-AF47-4D4363A9FF38}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GameOfLife.Core</RootNamespace>
     <AssemblyName>GameOfLife.Core</AssemblyName>
@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,8 +49,7 @@
     <Compile Include="Helpers\AliveNeighborsCounterHelper.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameConsts.cs" />
-    <Compile Include="Helpers\GameStatisticsHelper.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="GameStatistics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpaceGrid.cs" />
     <Compile Include="Helpers\StepPerformerHelper.cs" />

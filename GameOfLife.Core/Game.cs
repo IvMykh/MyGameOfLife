@@ -1,33 +1,24 @@
-﻿using System.Collections;
-
-using GameOfLife.Core.Helpers;
+﻿using GameOfLife.Core.Helpers;
 
 namespace GameOfLife.Core
 {
     public class Game
     {
-        private SpaceGrid                     _spaceGrid;
-        private GameStatisticsHelper          _gameStatistics;
-        private StepPerformerHelper           _stepPerformer;
+        private SpaceGrid               _spaceGrid;
+        private GameStatistics          _gameStatistics;
+        private StepPerformerHelper     _stepPerformer;
 
-        public int GenerationNumber
+        public GameStatistics GameStatistics
         {
             get {
-                return _gameStatistics.GenerationNumber;
-            }
-        }
-
-        public int AliveCellsCount
-        {
-            get {
-                return _gameStatistics.AliveCellsCount;
+                return _gameStatistics;
             }
         }
 
         public Game(int spaceGridDimension)
         {
             _spaceGrid      = new SpaceGrid(spaceGridDimension);
-            _gameStatistics = new GameStatisticsHelper(_spaceGrid);
+            _gameStatistics = new GameStatistics(_spaceGrid);
             _stepPerformer  = new StepPerformerHelper(_spaceGrid);
         }
 

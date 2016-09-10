@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Text;
 
 namespace GameOfLife.Core
 {
@@ -48,6 +47,7 @@ namespace GameOfLife.Core
         public event EventHandler<SpaceGridScaledEventArgs> SpaceGridScaled;
         public event EventHandler SpaceGridReset;
         public event EventHandler StepBufferApplied;
+        public event EventHandler CellStateSetManually;
 
         protected virtual void OnSpaceGridScaled(SpaceGridScaledEventArgs e)
         {
@@ -76,6 +76,15 @@ namespace GameOfLife.Core
                 handler(this, e);
             }
         }
+        protected virtual void OnCellStateSetManually(EventArgs e)
+        {
+            var handler = CellStateSetManually;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
 
         public bool IsCellAlive(int i, int j)
         {
@@ -84,6 +93,7 @@ namespace GameOfLife.Core
         public void SetCellLivingState(int i, int j, bool state)
         {
             _spaceGrid[i][j] = state;
+            OnCellStateSetManually(EventArgs.Empty);
         }
 
         private BitArray[] extendSpaceGrid(int newDimension)
@@ -172,23 +182,6 @@ namespace GameOfLife.Core
             }
 
             OnStepBufferApplied(EventArgs.Empty);
-        }
-
-        public string AsString()
-        {
-            var strBuilder = new StringBuilder(Dimension * Dimension + Dimension);
-
-            for (int i = 0; i < Dimension; i++)
-            {
-                for (int j = 0; j < Dimension; j++)
-                {
-                    strBuilder.Append(_spaceGrid[i][j] == true ? '1' : '*');
-                }
-
-                strBuilder.AppendLine();
-            }
-
-            return strBuilder.ToString();
         }
     }
 }

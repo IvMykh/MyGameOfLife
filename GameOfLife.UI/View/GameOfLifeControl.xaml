@@ -103,12 +103,12 @@
                 
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Generation: " />
-                    <Label Content="{Binding GenerationNumber}" /> <!--TODO: rewrite in Presenter-->
+                    <Label Content="{Binding Statistics.GenerationNumber}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Alive cells: " />
-                    <Label Content="{Binding AliveCellsCount}" /> <!--TODO: rewrite in Presenter-->
+                    <Label Content="{Binding Statistics.AliveCellsCount}" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

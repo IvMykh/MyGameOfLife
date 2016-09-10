@@ -2,10 +2,11 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
+
 using GameOfLife.Core;
-using GameOfLife.UI.ViewModel.Infrastructure;
-using GameOfLife.UI.ViewModel.Helpers;
 using GameOfLife.UI.Properties;
+using GameOfLife.UI.ViewModel.Helpers;
+using GameOfLife.UI.ViewModel.Infrastructure;
 
 namespace GameOfLife.UI.ViewModel
 {
@@ -48,19 +49,12 @@ namespace GameOfLife.UI.ViewModel
             }
         }
 
-        public int GenerationNumber
+        public GameStatistics Statistics
         {
-            get {
-                return _game.GenerationNumber;
+            get { 
+                return _game.GameStatistics; 
             }
         }
-        public int AliveCellsCount
-        {
-            get {
-                return _game.AliveCellsCount;
-            }
-        }
-
 
         // Commands.
         public DelegateCommand<Canvas> StartBtnPressCommand { get; private set; }
@@ -81,9 +75,18 @@ namespace GameOfLife.UI.ViewModel
             _spaceGridInteractionHelper = new SpaceGridInteractionHelper(_zoomHelper, _game);
             _gameAnimationHelper        = new GameAnimationHelper(_game, _spaceGridInteractionHelper);
 
-            GridConfig = _zoomHelper.InitialGridConfig;
-            StartStopBtnText = Resources.StartBtnText;
+            GridConfig          = _zoomHelper.InitialGridConfig;
+            StartStopBtnText    = Resources.StartBtnText;
 
+            _game.GameStatistics.AliveCellsCountChanged += 
+                (sender, e) => {
+                    RaisePropertyChangedEvent("Statistics");
+                };
+
+            _game.GameStatistics.GenerationNumberChanged +=
+                (sender, e) => {
+                    RaisePropertyChangedEvent("Statistics");
+                };
 
             initializeCommands();
         }
@@ -125,33 +128,41 @@ namespace GameOfLife.UI.ViewModel
         private DelegateCommand<Canvas> createAddKeyPressCommand()
         {
             return new DelegateCommand<Canvas>(
-                    canvas =>
-                    {
-                        zoom(canvas, 1);
+                    canvas => {
+                        if (!_gameAnimationHelper.IsRunningNow)
+                        {
+                            zoom(canvas, 1);
+                        }
                     });
         }
         private DelegateCommand<Canvas> createSubtractKeyPressCommand()
         {
             return new DelegateCommand<Canvas>(
                 canvas => {
-                    zoom(canvas, -1);
+                    if (!_gameAnimationHelper.IsRunningNow)
+                    {
+                        zoom(canvas, -1);
+                    }
                 });
         }
         private DelegateCommand<MouseWheelEventArgs> createMouseWheelCommand()
         {
             return new DelegateCommand<MouseWheelEventArgs>(
                     param => {
-                        int zoomDirection = (param.Delta < 0) ? -1 : 1;
-                        var sourceType = param.Source.GetType();
+                        if (!_gameAnimationHelper.IsRunningNow)
+                        {
+                            int zoomDirection = (param.Delta < 0) ? -1 : 1;
+                            var sourceType = param.Source.GetType();
 
-                        if (sourceType == typeof(Canvas))
-                        {
-                            zoom(param.Source as Canvas, zoomDirection);
-                        }
-                        else if (sourceType == typeof(Rectangle))
-                        {
-                            var sourceRect = param.Source as Rectangle;
-                            zoom(sourceRect.Parent as Canvas, zoomDirection);
+                            if (sourceType == typeof(Canvas))
+                            {
+                                zoom(param.Source as Canvas, zoomDirection);
+                            }
+                            else if (sourceType == typeof(Rectangle))
+                            {
+                                var sourceRect = param.Source as Rectangle;
+                                zoom(sourceRect.Parent as Canvas, zoomDirection);
+                            }
                         }
                     });
         }
@@ -159,13 +170,15 @@ namespace GameOfLife.UI.ViewModel
         {
             return new DelegateCommand<MouseEventArgs>(
                     param => {
-                        var senderType = param.Source.GetType();
+                        if (!_gameAnimationHelper.IsRunningNow)
+                        {
+                            var senderType = param.Source.GetType();
 
-                        if (senderType == typeof(Canvas))
-                            _spaceGridInteractionHelper.AddNewAliveCell(param);
-                        else if (senderType == typeof(Rectangle))
-                            _spaceGridInteractionHelper.RemoveAliveCell(param);
-
+                            if (senderType == typeof(Canvas))
+                                _spaceGridInteractionHelper.AddNewAliveCell(param);
+                            else if (senderType == typeof(Rectangle))
+                                _spaceGridInteractionHelper.RemoveAliveCell(param);
+                        }
                     });
         }
         
